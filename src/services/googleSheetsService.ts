@@ -11,10 +11,10 @@ export interface GoogleSheetsResponse<T = any> {
 
 export interface SheetMember {
   name: string;
-  okx: number;
-  bitget: number;
-  mexc: number;
-  bingx: number;
+  okx: number | null;
+  bitget: number | null;
+  mexc: number | null;
+  bingx: number | null;
   total: number;
 }
 
@@ -27,7 +27,6 @@ export interface SheetMonthlyData {
 export interface AllSheetData {
   members: SheetMember[];
   monthlyData: SheetMonthlyData[];
-  config: Array<{ [key: string]: any }>;
   lastUpdated: string;
 }
 
@@ -225,11 +224,11 @@ class GoogleSheetsService {
   convertMemberToSheetFormat(members: any[]): SheetMember[] {
     return members.map(member => ({
       name: member.name,
-      okx: parseFloat(member.okx?.toString() || '0'),
-      bitget: parseFloat(member.bitget?.toString() || '0'),
-      mexc: parseFloat(member.mexc?.toString() || '0'),
-      bingx: parseFloat(member.bingx?.toString() || '0'),
-      total: parseFloat(member.total?.toString() || '0')
+      okx: member.okx,
+      bitget: member.bitget,
+      mexc: member.mexc,
+      bingx: member.bingx,
+      total: member.total
     }));
   }
 
@@ -239,8 +238,8 @@ class GoogleSheetsService {
   convertMonthlyToSheetFormat(monthlyData: any[]): SheetMonthlyData[] {
     return monthlyData.map(data => ({
       month: data.month,
-      profit: parseFloat(data.profit?.toString() || '0'),
-      members: parseInt(data.members?.toString() || '0')
+      profit: data.profit,
+      members: 0 // Not used in your sheet structure
     }));
   }
 }

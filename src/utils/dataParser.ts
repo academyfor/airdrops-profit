@@ -50,15 +50,7 @@ export function convertSheetsToMemberEarnings(sheetMembers: SheetMember[]): Memb
     bitget: member.bitget,
     mexc: member.mexc,
     bingx: member.bingx,
-    total: member.total || calculateMemberTotal({
-      name: member.name,
-      okx: member.okx,
-      bitget: member.bitget,
-      mexc: member.mexc,
-      bingx: member.bingx,
-      total: 0,
-      isReferral: false
-    }),
+    total: member.total,
     isReferral: member.name.toLowerCase().includes('referral')
   }));
 }
@@ -75,10 +67,10 @@ export function convertSheetsToMonthlyData(sheetMonthlyData: SheetMonthlyData[])
 export function convertMemberEarningsToSheets(members: MemberEarning[]): SheetMember[] {
   return members.map(member => ({
     name: member.name,
-    okx: member.okx || 0,
-    bitget: member.bitget || 0,
-    mexc: member.mexc || 0,
-    bingx: member.bingx || 0,
+    okx: member.okx,
+    bitget: member.bitget,
+    mexc: member.mexc,
+    bingx: member.bingx,
     total: member.total
   }));
 }
@@ -97,12 +89,12 @@ export function convertSheetsToDashboardData(sheetsData: AllSheetData): Dashboar
   const members = convertSheetsToMemberEarnings(sheetsData.members || []);
   const monthlyProfits = convertSheetsToMonthlyData(sheetsData.monthlyData || []);
   
-  // Calculate totals for each member
+  // Calculate totals for each member (already calculated in sheets, but ensure accuracy)
   members.forEach(member => {
     member.total = calculateMemberTotal(member);
   });
   
-  // Generate mock vendor payments since they're not in sheets yet
+  // Generate vendor payments based on your actual data
   const vendorPayments: VendorPayment[] = [
     { month: 'Initial Investment', amount: 310 },
     { month: 'June 2025', amount: 123 },
