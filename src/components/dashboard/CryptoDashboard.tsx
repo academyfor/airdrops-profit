@@ -167,44 +167,12 @@ export function CryptoDashboard({ data }: CryptoDashboardProps) {
             </div>
           </div>
 
-          {/* Monthly Trends */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-lg font-semibold">
-              <Activity className="h-5 w-5 text-crypto-green" />
-              Profit Trends
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <MonthlyProfitChart 
-                monthlyProfits={data.monthlyProfits}
-                vendorPayments={data.vendorPayments}
-              />
-              <MonthlyProfitChart 
-                monthlyProfits={data.monthlyProfits}
-                vendorPayments={data.vendorPayments}
-                showComparison={true}
-              />
-            </div>
-          </div>
-
           {/* Member Earnings Table */}
           <MemberEarningsTable 
             members={filteredData.members}
             filters={filters}
           />
         </div>
-      </div>
-
-      {/* Vendor Section */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Receipt className="h-5 w-5 text-crypto-red" />
-          Vendor Analysis
-        </div>
-        <VendorSection 
-          vendorPayments={data.vendorPayments}
-          totalIncome={data.globalTotal}
-          vendorInvestment={315}
-        />
       </div>
 
       {/* AI Insights */}
