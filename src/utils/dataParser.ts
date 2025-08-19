@@ -41,7 +41,7 @@ export function calculateExchangeTotals(members: MemberEarning[]): ExchangeTotal
   return totals;
 }
 
-// Updated data based on actual spreadsheet image and user corrections
+// Data based on the actual Google Sheets CSV file
 export function getMockData(): DashboardData {
   const members: MemberEarning[] = [
     { name: 'Aneeq', okx: null, bitget: 15, mexc: -5, bingx: 13, total: 0, isReferral: false },
@@ -71,19 +71,19 @@ export function getMockData(): DashboardData {
     member.total = calculateMemberTotal(member);
   });
 
-  // Corrected monthly profits as per user data
+  // Monthly profits from the CSV
   const monthlyProfits: MonthlyData[] = [
     { month: 'May 2025', profit: 96 },
     { month: 'June 2025', profit: 200 },
     { month: 'July 2025', profit: 189 },
   ];
 
-  // Vendor payments - one-time investment plus monthly profits
+  // Vendor payments from the CSV (invested amount $310 plus monthly profits)
   const vendorPayments: VendorPayment[] = [
-    { month: 'Initial Investment', amount: 315 }, // One-time safe investment
-    { month: 'June 2025', amount: 123 }, // Monthly profit
-    { month: 'July 2025', amount: 216 }, // Monthly profit  
-    { month: 'August 2025', amount: 52 }, // Monthly profit
+    { month: 'Initial Investment', amount: 310 }, // Invested amount from CSV
+    { month: 'June 2025', amount: 123 }, // Monthly profit from CSV
+    { month: 'July 2025', amount: 216 }, // Monthly profit from CSV
+    { month: 'August 2025', amount: 52 }, // Monthly profit from CSV
   ];
 
   const exchangeTotals = calculateExchangeTotals(members);
