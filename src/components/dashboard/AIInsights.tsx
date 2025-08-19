@@ -144,27 +144,6 @@ function generateInsights(
     });
   }
 
-  // Vendor analysis
-  const totalVendorPaid = vendorPayments.reduce((sum, p) => sum + p.amount, 0);
-  const vendorInvestment = 315;
-  const vendorProfit = totalVendorPaid - vendorInvestment;
-  const vendorRatio = (totalVendorPaid / totalIncome * 100).toFixed(1);
-
-  insights.push({
-    icon: vendorProfit > 0 ? TrendingUp : AlertTriangle,
-    iconColor: vendorProfit > 0 ? 'text-crypto-green' : 'text-crypto-red',
-    iconBg: vendorProfit > 0 ? 'bg-crypto-green/20' : 'bg-crypto-red/20',
-    title: 'Vendor Status',
-    category: 'Finance',
-    badgeVariant: vendorProfit > 0 ? 'default' : 'destructive' as const,
-    description: `Vendor has ${vendorProfit > 0 ? 'earned' : 'lost'} $${Math.abs(vendorProfit)} with ${vendorRatio}% cost ratio.`,
-    details: [
-      `Investment: $${vendorInvestment}`,
-      `Paid: $${totalVendorPaid}`,
-      `Status: ${vendorProfit > 0 ? 'Profitable' : 'In Recovery'}`
-    ]
-  });
-
   // Member activity insights
   const activeMembers = members.filter(m => m.total !== 0).length;
   const potentialMembers = members.filter(m => 
