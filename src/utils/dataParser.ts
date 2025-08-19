@@ -1,4 +1,5 @@
 import { MemberEarning, MonthlyData, VendorPayment, DashboardData, ExchangeTotals } from '@/types/dashboard';
+import { AllSheetData, SheetMember, SheetMonthlyData } from '@/services/googleSheetsService';
 
 export function parseValue(value: string | undefined): number | null {
   if (!value || value.trim() === '') return null;
@@ -39,6 +40,89 @@ export function calculateExchangeTotals(members: MemberEarning[]): ExchangeTotal
 
   totals.total = totals.okx + totals.bitget + totals.mexc + totals.bingx;
   return totals;
+}
+
+// Convert Google Sheets data to dashboard format
+export function convertSheetsToMemberEarnings(sheetMembers: SheetMember[]): MemberEarning[] {
+  return sheetMembers.map(member => ({
+    name: member.name,
+    okx: member.okx,
+    bitget: member.bitget,
+    mexc: member.mexc,
+    bingx: member.bingx,
+    total: member.total || calculateMemberTotal({
+      name: member.name,
+      okx: member.okx,
+      bitget: member.bitget,
+      mexc: member.mexc,
+      bingx: member.bingx,
+      total: 0,
+      isReferral: false
+    }),
+    isReferral: member.name.toLowerCase().includes('referral')
+  }));
+}
+
+// Convert Google Sheets monthly data to dashboard format
+export function convertSheetsToMonthlyData(sheetMonthlyData: SheetMonthlyData[]): MonthlyData[] {
+  return sheetMonthlyData.map(data => ({
+    month: data.month,
+    profit: data.profit
+  }));
+}
+
+// Convert dashboard data back to Google Sheets format
+export function convertMemberEarningsToSheets(members: MemberEarning[]): SheetMember[] {
+  return members.map(member => ({
+    name: member.name,
+    okx: member.okx || 0,
+    bitget: member.bitget || 0,
+    mexc: member.mexc || 0,
+    bingx: member.bingx || 0,
+    total: member.total
+  }));
+}
+
+// Convert monthly data back to Google Sheets format
+export function convertMonthlyDataToSheets(monthlyData: MonthlyData[]): SheetMonthlyData[] {
+  return monthlyData.map(data => ({
+    month: data.month,
+    profit: data.profit,
+    members: 0 // Default value since MonthlyData doesn't have members property
+  }));
+}
+
+// Convert Google Sheets data to full dashboard data
+export function convertSheetsToDashboardData(sheetsData: AllSheetData): DashboardData {
+  const members = convertSheetsToMemberEarnings(sheetsData.members || []);
+  const monthlyProfits = convertSheetsToMonthlyData(sheetsData.monthlyData || []);
+  
+  // Calculate totals for each member
+  members.forEach(member => {
+    member.total = calculateMemberTotal(member);
+  });
+  
+  // Generate mock vendor payments since they're not in sheets yet
+  const vendorPayments: VendorPayment[] = [
+    { month: 'Initial Investment', amount: 310 },
+    { month: 'June 2025', amount: 123 },
+    { month: 'July 2025', amount: 216 },
+    { month: 'August 2025', amount: 52 },
+  ];
+
+  const exchangeTotals = calculateExchangeTotals(members);
+  const totalVendorSpend = vendorPayments.reduce((sum, payment) => sum + payment.amount, 0);
+  const netProfit = exchangeTotals.total;
+
+  return {
+    members,
+    monthlyProfits,
+    vendorPayments,
+    exchangeTotals,
+    globalTotal: exchangeTotals.total,
+    netProfit,
+    totalVendorSpend,
+  };
 }
 
 // Data based on the actual Google Sheets CSV file

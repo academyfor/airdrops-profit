@@ -1,5 +1,8 @@
 import { useState, useMemo } from 'react';
 import { FilterState, DashboardData } from '@/types/dashboard';
+import { useGoogleSheets } from '@/hooks/useGoogleSheets';
+import { GoogleSheetsSync } from './GoogleSheetsSync';
+import { convertSheetsToDashboardData } from '@/utils/dataParser';
 import { KPICard } from './KPICard';
 import { MemberEarningsTable } from './MemberEarningsTable';
 import { DashboardFilters } from './DashboardFilters';
@@ -17,14 +20,17 @@ import {
   PieChart,
   Activity,
   Brain,
-  Receipt
+  Receipt,
+  Settings
 } from 'lucide-react';
 
 interface CryptoDashboardProps {
   data: DashboardData;
 }
 
-export function CryptoDashboard({ data }: CryptoDashboardProps) {
+export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
+  const googleSheets = useGoogleSheets();
+  const [data, setData] = useState<DashboardData>(initialData);
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedExchanges: [],
@@ -33,6 +39,19 @@ export function CryptoDashboard({ data }: CryptoDashboardProps) {
     showReferrals: true,
     selectedMembers: [],
   });
+
+  // Update data when Google Sheets data is fetched
+  const handleFetchData = () => {
+    if (googleSheets.sheetsData) {
+      const newData = convertSheetsToDashboardData(googleSheets.sheetsData);
+      setData(newData);
+    }
+  };
+
+  const handlePushData = () => {
+    // Data is successfully pushed to Google Sheets
+    // Could add additional logic here if needed
+  };
 
   const memberNames = useMemo(() => 
     data.members.map(m => m.name), 
@@ -173,6 +192,23 @@ export function CryptoDashboard({ data }: CryptoDashboardProps) {
             filters={filters}
           />
         </div>
+      </div>
+
+      {/* Google Sheets Integration */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <Settings className="h-5 w-5 text-primary" />
+          Google Sheets Integration
+        </div>
+        <GoogleSheetsSync 
+          googleSheets={googleSheets}
+          onFetchData={handleFetchData}
+          onPushData={handlePushData}
+          dashboardData={{
+            members: data.members,
+            monthlyData: data.monthlyProfits
+          }}
+        />
       </div>
 
       {/* AI Insights */}
