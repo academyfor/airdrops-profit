@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Crypto Dashboard Design System - Dark Theme with Vibrant Accents */
+
+@layer base {
+  :root {
+    /* Dark theme base colors */
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
+
+    /* Card and surface colors */
+    --card: 224 47% 6%;
+    --card-foreground: 210 40% 98%;
+
+    /* Interactive surfaces */
+    --popover: 224 47% 6%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary brand colors - Crypto gold/orange */
+    --primary: 35 100% 55%;
+    --primary-foreground: 222 47% 4%;
+
+    /* Secondary colors - Subtle blue */
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Muted colors */
+    --muted: 217 32% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent colors - Electric blue */
+    --accent: 212 100% 55%;
+    --accent-foreground: 222 47% 4%;
+
+    /* Success and danger */
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Borders and inputs */
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 35 100% 55%;
+
+    /* Crypto-specific colors */
+    --crypto-green: 142 76% 36%;
+    --crypto-red: 0 84% 60%;
+    --crypto-gold: 45 100% 51%;
+    --crypto-silver: 210 16% 82%;
+
+    /* Exchange brand colors */
+    --okx: 35 100% 55%;
+    --bitget: 212 100% 55%;
+    --mexc: 142 76% 36%;
+    --bingx: 271 91% 65%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(35 100% 55%), hsl(45 100% 51%));
+    --gradient-crypto: linear-gradient(135deg, hsl(212 100% 55%), hsl(271 91% 65%));
+    --gradient-card: linear-gradient(135deg, hsl(224 47% 6%), hsl(217 32% 17%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-danger: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 70%));
+
+    /* Shadows and effects */
+    --shadow-glow: 0 0 40px hsl(35 100% 55% / 0.3);
+    --shadow-card: 0 4px 20px hsl(222 47% 4% / 0.5);
+    --shadow-primary: 0 4px 20px hsl(35 100% 55% / 0.4);
+
+    /* Animation and transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Additional component styles */
+  .crypto-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .crypto-gradient {
+    background: var(--gradient-crypto);
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px hsl(35 100% 55% / 0.2);
+    }
+    to {
+      box-shadow: 0 0 30px hsl(35 100% 55% / 0.5);
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

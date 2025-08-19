@@ -1,0 +1,225 @@
+import { useState, useMemo } from 'react';
+import { FilterState, DashboardData } from '@/types/dashboard';
+import { KPICard } from './KPICard';
+import { MemberEarningsTable } from './MemberEarningsTable';
+import { DashboardFilters } from './DashboardFilters';
+import { MemberEarningsChart } from './charts/MemberEarningsChart';
+import { ExchangePieChart } from './charts/ExchangePieChart';
+import { MonthlyProfitChart } from './charts/MonthlyProfitChart';
+import { VendorSection } from './VendorSection';
+import { AIInsights } from './AIInsights';
+import { 
+  TrendingUp, 
+  DollarSign, 
+  Users, 
+  PiggyBank,
+  BarChart3,
+  PieChart,
+  Activity,
+  Brain,
+  Receipt
+} from 'lucide-react';
+
+interface CryptoDashboardProps {
+  data: DashboardData;
+}
+
+export function CryptoDashboard({ data }: CryptoDashboardProps) {
+  const [filters, setFilters] = useState<FilterState>({
+    searchTerm: '',
+    selectedExchanges: [],
+    includeZeros: true,
+    includePotentials: true,
+    showReferrals: true,
+    selectedMembers: [],
+  });
+
+  const memberNames = useMemo(() => 
+    data.members.map(m => m.name), 
+    [data.members]
+  );
+
+  const filteredData = useMemo(() => {
+    let filteredMembers = [...data.members];
+
+    // Apply filters
+    if (filters.searchTerm) {
+      filteredMembers = filteredMembers.filter(m => 
+        m.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      );
+    }
+
+    if (!filters.showReferrals) {
+      filteredMembers = filteredMembers.filter(m => !m.isReferral);
+    }
+
+    if (!filters.includeZeros) {
+      filteredMembers = filteredMembers.filter(m => 
+        ![m.okx, m.bitget, m.mexc, m.bingx].some(val => val === 0)
+      );
+    }
+
+    if (!filters.includePotentials) {
+      filteredMembers = filteredMembers.filter(m => 
+        ![m.okx, m.bitget, m.mexc, m.bingx].some(val => val === null)
+      );
+    }
+
+    return { ...data, members: filteredMembers };
+  }, [data, filters]);
+
+  return (
+    <div className="min-h-screen bg-background p-4 space-y-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+          Crypto Income Dashboard
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Track earnings, analyze performance, and monitor vendor relationships
+        </p>
+        {/* Total Project Profit Summary */}
+        <div className="mt-4 p-4 rounded-lg card-gradient border border-primary/30">
+          <p className="text-sm text-muted-foreground mb-1">Total Project Profit</p>
+          <p className="text-3xl font-bold text-crypto-green">
+            ${(data.globalTotal + 391).toFixed(0)}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Your Earnings: ${data.globalTotal} + Vendor Paid: $391 = Combined Success
+          </p>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        <KPICard
+          title="Total Income"
+          value={data.globalTotal}
+          icon={DollarSign}
+          variant="primary"
+          subtitle="Across all exchanges"
+        />
+        <KPICard
+          title="OKX Earnings"
+          value={data.exchangeTotals.okx}
+          icon={TrendingUp}
+          trend={data.exchangeTotals.okx > 0 ? 'up' : 'neutral'}
+        />
+        <KPICard
+          title="Bitget Earnings"
+          value={data.exchangeTotals.bitget}
+          icon={TrendingUp}
+          trend={data.exchangeTotals.bitget > 0 ? 'up' : data.exchangeTotals.bitget < 0 ? 'down' : 'neutral'}
+        />
+        <KPICard
+          title="MEXC Earnings"
+          value={data.exchangeTotals.mexc}
+          icon={TrendingUp}
+          trend={data.exchangeTotals.mexc > 0 ? 'up' : 'neutral'}
+        />
+        <KPICard
+          title="BingX Earnings"
+          value={data.exchangeTotals.bingx}
+          icon={TrendingUp}
+          trend={data.exchangeTotals.bingx > 0 ? 'up' : 'neutral'}
+        />
+        <KPICard
+          title="Net Profit"
+          value={data.netProfit}
+          icon={PiggyBank}
+          variant={data.netProfit > 0 ? 'success' : 'danger'}
+          subtitle={`After vendor costs`}
+        />
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Filters Sidebar */}
+        <div className="lg:col-span-1">
+          <DashboardFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            memberNames={memberNames}
+          />
+        </div>
+
+        {/* Charts and Tables */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-lg font-semibold">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Member Performance
+              </div>
+              <MemberEarningsChart 
+                members={filteredData.members}
+                selectedMembers={filters.selectedMembers}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-lg font-semibold">
+                <PieChart className="h-5 w-5 text-accent" />
+                Exchange Distribution
+              </div>
+              <ExchangePieChart exchangeTotals={data.exchangeTotals} />
+            </div>
+          </div>
+
+          {/* Monthly Trends */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-lg font-semibold">
+              <Activity className="h-5 w-5 text-crypto-green" />
+              Profit Trends
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <MonthlyProfitChart 
+                monthlyProfits={data.monthlyProfits}
+                vendorPayments={data.vendorPayments}
+              />
+              <MonthlyProfitChart 
+                monthlyProfits={data.monthlyProfits}
+                vendorPayments={data.vendorPayments}
+                showComparison={true}
+              />
+            </div>
+          </div>
+
+          {/* Member Earnings Table */}
+          <MemberEarningsTable 
+            members={filteredData.members}
+            filters={filters}
+          />
+        </div>
+      </div>
+
+      {/* Vendor Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <Receipt className="h-5 w-5 text-crypto-red" />
+          Vendor Analysis
+        </div>
+        <VendorSection 
+          vendorPayments={data.vendorPayments}
+          totalIncome={data.globalTotal}
+          vendorInvestment={315}
+        />
+      </div>
+
+      {/* AI Insights */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <Brain className="h-5 w-5 text-primary" />
+          AI-Powered Insights
+        </div>
+        <AIInsights 
+          members={data.members}
+          monthlyProfits={data.monthlyProfits}
+          vendorPayments={data.vendorPayments}
+          totalIncome={data.globalTotal}
+        />
+      </div>
+    </div>
+  );
+}
