@@ -1,6 +1,6 @@
 // Google Sheets API Service using Google Apps Script
-// Replace YOUR_SCRIPT_ID with your actual Google Apps Script deployment ID
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+// Connected to your deployed Google Apps Script
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwch7x2Fvlsyu25WqBpN7BbQ2pgB_qemNqjIT_JQkwKL6-npc-p9l3-UYlue9Vuw-UIkQ/exec';
 
 export interface GoogleSheetsResponse<T = any> {
   success: boolean;
