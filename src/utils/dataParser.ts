@@ -81,9 +81,9 @@ export function getMockData(): DashboardData {
   // Vendor payments - one-time investment plus monthly profits
   const vendorPayments: VendorPayment[] = [
     { month: 'Initial Investment', amount: 315 }, // One-time safe investment
-    { month: 'June 2025', amount: 150 }, // Monthly profit
-    { month: 'July 2025', amount: 180 }, // Monthly profit  
-    { month: 'August 2025', amount: 61 }, // Monthly profit
+    { month: 'June 2025', amount: 123 }, // Monthly profit
+    { month: 'July 2025', amount: 216 }, // Monthly profit  
+    { month: 'August 2025', amount: 52 }, // Monthly profit
   ];
 
   const exchangeTotals = calculateExchangeTotals(members);
