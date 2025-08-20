@@ -210,10 +210,35 @@ class GoogleSheetsService {
    */
   async testConnection(): Promise<boolean> {
     try {
-      await this.getAllData();
-      return true;
+      console.log('Testing connection to:', this.baseUrl);
+      
+      const response = await fetch(`${this.baseUrl}?action=getAllData`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        console.error('HTTP error! status:', response.status);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('Response data:', result);
+      
+      if (result.success) {
+        console.log('✅ Google Sheets connection successful');
+        return true;
+      } else {
+        console.error('❌ Google Sheets returned error:', result.error || result.message);
+        return false;
+      }
     } catch (error) {
-      console.error('Google Sheets connection test failed:', error);
+      console.error('❌ Google Sheets connection test failed:', error);
       return false;
     }
   }
