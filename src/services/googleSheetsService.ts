@@ -1,6 +1,6 @@
 // SheetDB API Service
 // Connected to your SheetDB API
-const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/q1su2y9x4cn8c';
+const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/jkhg2q6w3ubsa';
 
 export interface SheetDBResponse<T = any> {
   success?: boolean;
