@@ -56,14 +56,14 @@ class SheetDBService {
       
       // SheetDB returns array directly, process it to match our interface
       const members: SheetMember[] = data
-        .filter((row: any) => row.name && row.name.trim() !== '')
+        .filter((row: any) => row.Name && row.Name.trim() !== '')
         .map((row: any) => ({
-          name: row.name || '',
-          okx: this.parseNumber(row.okx),
-          bitget: this.parseNumber(row.bitget),
-          mexc: this.parseNumber(row.mexc),
-          bingx: this.parseNumber(row.bingx),
-          total: this.calculateTotal(row.okx, row.bitget, row.mexc, row.bingx)
+          name: row.Name || '',
+          okx: this.parseNumber(row.OKX),
+          bitget: this.parseNumber(row.Bitget),
+          mexc: this.parseNumber(row.MEXC),
+          bingx: this.parseNumber(row.BingX),
+          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX)
         }));
 
       // For now, return empty monthly data as it's in a different sheet structure
@@ -96,14 +96,14 @@ class SheetDBService {
       const data = await response.json();
       
       return data
-        .filter((row: any) => row.name && row.name.trim() !== '')
+        .filter((row: any) => row.Name && row.Name.trim() !== '')
         .map((row: any) => ({
-          name: row.name || '',
-          okx: this.parseNumber(row.okx),
-          bitget: this.parseNumber(row.bitget),
-          mexc: this.parseNumber(row.mexc),
-          bingx: this.parseNumber(row.bingx),
-          total: this.calculateTotal(row.okx, row.bitget, row.mexc, row.bingx)
+          name: row.Name || '',
+          okx: this.parseNumber(row.OKX),
+          bitget: this.parseNumber(row.Bitget),
+          mexc: this.parseNumber(row.MEXC),
+          bingx: this.parseNumber(row.BingX),
+          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX)
         }));
     } catch (error) {
       console.error('Error fetching members from SheetDB:', error);
@@ -142,11 +142,11 @@ class SheetDBService {
         },
         body: JSON.stringify(
           members.map(member => ({
-            name: member.name,
-            okx: member.okx || '',
-            bitget: member.bitget || '',
-            mexc: member.mexc || '',
-            bingx: member.bingx || '',
+            Name: member.name,
+            OKX: member.okx || '',
+            Bitget: member.bitget || '',
+            MEXC: member.mexc || '',
+            BingX: member.bingx || '',
             total: member.total || 0
           }))
         ),
