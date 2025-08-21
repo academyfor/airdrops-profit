@@ -194,23 +194,6 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         </div>
       </div>
 
-      {/* Google Sheets Integration */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Settings className="h-5 w-5 text-primary" />
-          Google Sheets Integration
-        </div>
-        <GoogleSheetsSync 
-          googleSheets={googleSheets}
-          onFetchData={handleFetchData}
-          onPushData={handlePushData}
-          dashboardData={{
-            members: data.members,
-            monthlyData: data.monthlyProfits
-          }}
-        />
-      </div>
-
       {/* AI Insights */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-lg font-semibold">
@@ -222,6 +205,23 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
           monthlyProfits={data.monthlyProfits}
           vendorPayments={data.vendorPayments}
           totalIncome={data.globalTotal}
+        />
+      </div>
+
+      {/* SheetDB Integration */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <Settings className="h-5 w-5 text-primary" />
+          SheetDB Integration
+        </div>
+        <GoogleSheetsSync 
+          googleSheets={googleSheets}
+          onFetchData={handleFetchData}
+          onPushData={handlePushData}
+          dashboardData={{
+            members: data.members,
+            monthlyData: data.monthlyProfits
+          }}
         />
       </div>
     </div>

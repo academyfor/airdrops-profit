@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import googleSheetsService, { AllSheetData, SheetMember, SheetMonthlyData } from '../services/googleSheetsService';
+import sheetDBService, { AllSheetData, SheetMember, SheetMonthlyData } from '../services/googleSheetsService';
 
 export interface UseGoogleSheetsReturn {
   // State
@@ -27,7 +27,7 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
   const testConnection = useCallback(async (): Promise<boolean> => {
     try {
       setIsLoading(true);
-      const connected = await googleSheetsService.testConnection();
+      const connected = await sheetDBService.testConnection();
       setIsConnected(connected);
       
       if (connected) {
@@ -52,7 +52,7 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
       setIsLoading(true);
       toast.loading('📥 Fetching data from Google Sheets...', { id: 'fetch-sheets' });
       
-      const data = await googleSheetsService.getAllData();
+      const data = await sheetDBService.getAllData();
       setSheetsData(data);
       setLastSyncTime(new Date());
       setIsConnected(true);
@@ -76,14 +76,14 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
       const updateData: { members?: SheetMember[]; monthlyData?: SheetMonthlyData[] } = {};
       
       if (data.members) {
-        updateData.members = googleSheetsService.convertMemberToSheetFormat(data.members);
+        updateData.members = sheetDBService.convertMemberToSheetFormat(data.members);
       }
       
       if (data.monthlyData) {
-        updateData.monthlyData = googleSheetsService.convertMonthlyToSheetFormat(data.monthlyData);
+        updateData.monthlyData = sheetDBService.convertMonthlyToSheetFormat(data.monthlyData);
       }
       
-      await googleSheetsService.updateAllData(updateData);
+      await sheetDBService.updateAllData(updateData);
       setLastSyncTime(new Date());
       setIsConnected(true);
       
@@ -104,7 +104,7 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
       toast.loading('🔄 Syncing with Google Sheets...', { id: 'sync-sheets' });
       
       // First fetch the latest data from sheets
-      const data = await googleSheetsService.getAllData();
+      const data = await sheetDBService.getAllData();
       setSheetsData(data);
       setLastSyncTime(new Date());
       setIsConnected(true);
