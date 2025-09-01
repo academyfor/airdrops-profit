@@ -11,6 +11,7 @@ import { ExchangePieChart } from './charts/ExchangePieChart';
 import { MonthlyProfitChart } from './charts/MonthlyProfitChart';
 import { VendorSection } from './VendorSection';
 import { AIInsights } from './AIInsights';
+import { IncomeComparison } from './IncomeComparison';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -193,6 +194,13 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
           />
         </div>
       </div>
+
+      {/* Income Comparison */}
+      {googleSheets.sheetsData?.incomeData && (
+        <div className="space-y-4">
+          <IncomeComparison incomeData={googleSheets.sheetsData.incomeData} />
+        </div>
+      )}
 
       {/* AI Insights */}
       <div className="space-y-4">
