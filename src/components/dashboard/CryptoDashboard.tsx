@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FilterState, DashboardData } from '@/types/dashboard';
 import { useGoogleSheets } from '@/hooks/useGoogleSheets';
 import { GoogleSheetsSync } from './GoogleSheetsSync';
@@ -31,7 +31,18 @@ interface CryptoDashboardProps {
 
 export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
   const googleSheets = useGoogleSheets();
-  const [data, setData] = useState<DashboardData>(initialData);
+  const [data, setData] = useState<DashboardData>(() => {
+    // Try to load persisted data from localStorage
+    const persistedData = localStorage.getItem('cryptoDashboardData');
+    if (persistedData) {
+      try {
+        return JSON.parse(persistedData);
+      } catch (error) {
+        console.error('Error parsing persisted data:', error);
+      }
+    }
+    return initialData;
+  });
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedExchanges: [],
@@ -46,6 +57,8 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     if (googleSheets.sheetsData) {
       const newData = convertSheetsToDashboardData(googleSheets.sheetsData);
       setData(newData);
+      // Persist data to localStorage
+      localStorage.setItem('cryptoDashboardData', JSON.stringify(newData));
     }
   };
 
@@ -88,6 +101,21 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     return { ...data, members: filteredMembers };
   }, [data, filters]);
 
+  // Calculate total income from income comparison data
+  const totalIncomeFromComparison = useMemo(() => {
+    const incomeData = googleSheets.sheetsData?.incomeData || [
+      { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
+      { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
+      { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
+      { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
+    ];
+    
+    const totalMyIncome = incomeData.reduce((sum, item) => sum + item.myProfit, 0);
+    const totalVendorIncome = incomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
+    
+    return totalMyIncome + totalVendorIncome;
+  }, [googleSheets.sheetsData?.incomeData]);
+
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       {/* Header */}
@@ -102,10 +130,10 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         <div className="mt-4 p-4 rounded-lg card-gradient border border-primary/30">
           <p className="text-sm text-muted-foreground mb-1">Total Project Profit</p>
           <p className="text-3xl font-bold text-crypto-green">
-            ${(data.globalTotal + 391).toFixed(0)}
+            ${totalIncomeFromComparison.toFixed(0)}
           </p>
           <p className="text-xs text-muted-foreground">
-            Your Earnings: ${data.globalTotal} + Vendor Paid: $391 = Combined Success
+            My Income + Vendor Income = Combined Success
           </p>
         </div>
       </div>
