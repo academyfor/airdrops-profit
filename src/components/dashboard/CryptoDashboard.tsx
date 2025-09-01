@@ -116,6 +116,18 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     return totalMyIncome + totalVendorIncome;
   }, [googleSheets.sheetsData?.incomeData]);
 
+  // Calculate my total income for Net Profit display
+  const myTotalIncome = useMemo(() => {
+    const incomeData = googleSheets.sheetsData?.incomeData || [
+      { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
+      { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
+      { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
+      { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
+    ];
+    
+    return incomeData.reduce((sum, item) => sum + item.myProfit, 0);
+  }, [googleSheets.sheetsData?.incomeData]);
+
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       {/* Header */}
@@ -173,10 +185,10 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         />
         <KPICard
           title="Net Profit"
-          value={data.netProfit}
+          value={myTotalIncome}
           icon={PiggyBank}
-          variant={data.netProfit > 0 ? 'success' : 'danger'}
-          subtitle={`After vendor costs`}
+          variant={myTotalIncome > 0 ? 'success' : 'danger'}
+          subtitle={`My total income`}
         />
       </div>
 
