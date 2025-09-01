@@ -195,12 +195,15 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         </div>
       </div>
 
-      {/* Income Comparison */}
-      {googleSheets.sheetsData?.incomeData && (
-        <div className="space-y-4">
-          <IncomeComparison incomeData={googleSheets.sheetsData.incomeData} />
-        </div>
-      )}
+      {/* Income Comparison - Always show with data */}
+      <div className="space-y-4">
+        <IncomeComparison incomeData={googleSheets.sheetsData?.incomeData || [
+          { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
+          { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
+          { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
+          { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
+        ]} />
+      </div>
 
       {/* AI Insights */}
       <div className="space-y-4">
