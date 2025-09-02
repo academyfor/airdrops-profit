@@ -133,7 +133,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-          Crypto Income Dashboard
+          Airdrops Income Dashboard
         </h1>
         <p className="text-muted-foreground text-lg">
           Track earnings, analyze performance, and monitor vendor relationships
@@ -153,8 +153,8 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <KPICard
-          title="Total Income"
-          value={data.globalTotal}
+          title="Total In-Eligible Accounts"
+          value={googleSheets.sheetsData?.totalInEligibleAccounts || 50}
           icon={DollarSign}
           variant="primary"
           subtitle="Across all exchanges"

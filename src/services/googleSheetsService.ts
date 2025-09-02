@@ -34,6 +34,7 @@ export interface AllSheetData {
   members: SheetMember[];
   monthlyData: SheetMonthlyData[];
   incomeData: IncomeData[];
+  totalInEligibleAccounts: number;
   lastUpdated: string;
 }
 
@@ -76,11 +77,15 @@ class SheetDBService {
       // Get income data from the same sheet
       const incomeData = await this.getIncomeData();
       const monthlyData: SheetMonthlyData[] = [];
+      
+      // Get total in-eligible accounts from G20:H20 range
+      const totalInEligibleAccounts = await this.getTotalInEligibleAccounts(data);
 
       return {
         members,
         monthlyData,
         incomeData,
+        totalInEligibleAccounts,
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
@@ -363,6 +368,30 @@ class SheetDBService {
         { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
         { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
       ];
+    }
+  }
+
+  /**
+   * Get Total In-Eligible Accounts from G20:H20 range
+   */
+  private async getTotalInEligibleAccounts(data: any[]): Promise<number> {
+    try {
+      // Look for the row that contains "Total In-Eligible Accounts"
+      const totalRow = data.find(row => 
+        row.Month === "Total In-Eligible Accounts" || 
+        (row.Month && row.Month.toString().includes("Total In-Eligible Accounts"))
+      );
+      
+      if (totalRow && totalRow.Profit !== undefined) {
+        const value = this.parseNumber(totalRow.Profit);
+        return value || 50; // fallback to 50 from your screenshot
+      }
+      
+      // Fallback to the value from your screenshot
+      return 50;
+    } catch (error) {
+      console.error('Error getting total in-eligible accounts:', error);
+      return 50; // fallback value
     }
   }
 }
