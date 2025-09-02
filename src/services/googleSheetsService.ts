@@ -377,47 +377,24 @@ class SheetDBService {
    */
   private async getTotalInEligibleAccounts(data: any[]): Promise<number> {
     try {
-      // Look for the row that contains "Total In-Eligible Accounts" in any column
-      const totalRow = data.find(row => {
-        // Check all properties of the row for the text
-        return Object.values(row).some(value => 
-          value && value.toString().includes("Total In-Eligible Accounts")
-        );
-      });
+      // Find the row that contains "Total In-Eligible Accounts" in the "My Income" column
+      const totalRowIndex = data.findIndex(row => 
+        row["My Income"] && row["My Income"].toString().includes("Total In-Eligible Accounts")
+      );
       
-      if (totalRow) {
-        // If we found the row, look for the numeric value in the next column
-        const rowValues = Object.values(totalRow);
-        const totalAccountsIndex = rowValues.findIndex(value => 
-          value && value.toString().includes("Total In-Eligible Accounts")
-        );
+      if (totalRowIndex !== -1 && totalRowIndex + 1 < data.length) {
+        // Get the value from the next row in the same "My Income" column
+        const nextRow = data[totalRowIndex + 1];
+        const value = this.parseNumber(nextRow["My Income"]);
         
-        if (totalAccountsIndex !== -1 && totalAccountsIndex + 1 < rowValues.length) {
-          const value = this.parseNumber(rowValues[totalAccountsIndex + 1]);
-          return value || 50;
+        console.log(`Found Total In-Eligible Accounts at row ${totalRowIndex}, next row value:`, nextRow["My Income"], 'parsed as:', value);
+        
+        if (value && value > 0) {
+          return value;
         }
       }
       
-      // Also check if there's a row with just the number 50 or similar pattern
-      const numberRow = data.find(row => {
-        const values = Object.values(row);
-        return values.some(value => {
-          const num = this.parseNumber(value);
-          return num === 50; // Looking for the specific value from the screenshot
-        });
-      });
-      
-      if (numberRow) {
-        const values = Object.values(numberRow);
-        for (const value of values) {
-          const num = this.parseNumber(value);
-          if (num && num > 0) {
-            return num;
-          }
-        }
-      }
-      
-      // Final fallback
+      // Fallback
       console.log('Could not find Total In-Eligible Accounts in sheet data. Using fallback value.');
       return 50;
     } catch (error) {
