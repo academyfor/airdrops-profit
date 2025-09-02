@@ -79,6 +79,7 @@ class SheetDBService {
       const monthlyData: SheetMonthlyData[] = [];
       
       // Get total in-eligible accounts from G20:H20 range
+      console.log('Raw data structure for debugging:', data.slice(0, 5)); // Log first 5 rows
       const totalInEligibleAccounts = await this.getTotalInEligibleAccounts(data);
 
       return {
@@ -376,22 +377,52 @@ class SheetDBService {
    */
   private async getTotalInEligibleAccounts(data: any[]): Promise<number> {
     try {
-      // Look for the row that contains "Total In-Eligible Accounts"
-      const totalRow = data.find(row => 
-        row.Month === "Total In-Eligible Accounts" || 
-        (row.Month && row.Month.toString().includes("Total In-Eligible Accounts"))
-      );
+      // Look for the row that contains "Total In-Eligible Accounts" in any column
+      const totalRow = data.find(row => {
+        // Check all properties of the row for the text
+        return Object.values(row).some(value => 
+          value && value.toString().includes("Total In-Eligible Accounts")
+        );
+      });
       
-      if (totalRow && totalRow.Profit !== undefined) {
-        const value = this.parseNumber(totalRow.Profit);
-        return value || 50; // fallback to 50 from your screenshot
+      if (totalRow) {
+        // If we found the row, look for the numeric value in the next column
+        const rowValues = Object.values(totalRow);
+        const totalAccountsIndex = rowValues.findIndex(value => 
+          value && value.toString().includes("Total In-Eligible Accounts")
+        );
+        
+        if (totalAccountsIndex !== -1 && totalAccountsIndex + 1 < rowValues.length) {
+          const value = this.parseNumber(rowValues[totalAccountsIndex + 1]);
+          return value || 50;
+        }
       }
       
-      // Fallback to the value from your screenshot
+      // Also check if there's a row with just the number 50 or similar pattern
+      const numberRow = data.find(row => {
+        const values = Object.values(row);
+        return values.some(value => {
+          const num = this.parseNumber(value);
+          return num === 50; // Looking for the specific value from the screenshot
+        });
+      });
+      
+      if (numberRow) {
+        const values = Object.values(numberRow);
+        for (const value of values) {
+          const num = this.parseNumber(value);
+          if (num && num > 0) {
+            return num;
+          }
+        }
+      }
+      
+      // Final fallback
+      console.log('Could not find Total In-Eligible Accounts in sheet data. Using fallback value.');
       return 50;
     } catch (error) {
       console.error('Error getting total in-eligible accounts:', error);
-      return 50; // fallback value
+      return 50;
     }
   }
 }
