@@ -22,7 +22,8 @@ import {
   Activity,
   Brain,
   Receipt,
-  Settings
+  Settings,
+  TrendingDown
 } from 'lucide-react';
 
 interface CryptoDashboardProps {
@@ -155,9 +156,10 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         <KPICard
           title="Total In-Eligible Accounts"
           value={googleSheets.sheetsData?.totalInEligibleAccounts || 50}
-          icon={DollarSign}
+          icon={TrendingDown}
           variant="primary"
           subtitle="Across all exchanges"
+          showCurrency={false}
         />
         <KPICard
           title="OKX Earnings"

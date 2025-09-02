@@ -10,6 +10,7 @@ interface KPICardProps {
   trend?: 'up' | 'down' | 'neutral';
   variant?: 'default' | 'primary' | 'success' | 'danger';
   className?: string;
+  showCurrency?: boolean;
 }
 
 export function KPICard({ 
@@ -19,16 +20,21 @@ export function KPICard({
   icon: Icon, 
   trend, 
   variant = 'default',
-  className 
+  className,
+  showCurrency = true
 }: KPICardProps) {
   const formatValue = (val: string | number) => {
     if (typeof val === 'number') {
-      return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(val);
+      if (showCurrency) {
+        return new Intl.NumberFormat('en-US', { 
+          style: 'currency', 
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(val);
+      } else {
+        return new Intl.NumberFormat('en-US').format(val);
+      }
     }
     return val;
   };
