@@ -129,6 +129,11 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     return incomeData.reduce((sum, item) => sum + item.myProfit, 0);
   }, [googleSheets.sheetsData?.incomeData]);
 
+  // Keep the header total in sync with the table grand total (last cell)
+  const tableGrandTotal = useMemo(() => {
+    return filteredData.members.reduce((sum, m) => sum + (m.total || 0), 0);
+  }, [filteredData.members]);
+
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       {/* Header */}
@@ -143,7 +148,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         <div className="mt-4 p-4 rounded-lg card-gradient border border-primary/30">
           <p className="text-sm text-muted-foreground mb-1">Total Project Profit</p>
           <p className="text-3xl font-bold text-crypto-green">
-            ${totalIncomeFromComparison.toFixed(0)}
+            ${tableGrandTotal.toFixed(0)}
           </p>
           <p className="text-xs text-muted-foreground">
             My Income + Vendor Income = Combined Success
