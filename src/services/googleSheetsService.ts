@@ -304,65 +304,111 @@ class SheetDBService {
       }
 
       const data = await response.json();
-      console.log('Raw sheet data for income:', data);
+      console.log('Raw sheet data for income parsing:', data);
       
-      // Based on your sheet screenshot, extract actual income data
-      // Look for rows that have Month and Profit data in the right columns
       const incomeData: IncomeData[] = [];
       
-      // Process each row to find income data
+      // Find rows with months in "My Income" column and extract corresponding profit values
+      // First, collect all rows with month data 
+      const monthRows: { [key: string]: { myProfit: number; vendorProfit: number } } = {};
+      
+      // Look for vendor income section marker
+      let vendorIncomeStartIndex = -1;
       data.forEach((row: any, index: number) => {
-        // Check if this row has Month and Profit data (columns G and H)
-        if (row.Month && row.Profit !== undefined && row.Profit !== null && row.Profit !== '') {
-          const month = row.Month.toString().trim();
-          const profit = this.parseNumber(row.Profit) || 0;
+        if (row["My Income"] && row["My Income"].toString().includes("Vendor Income")) {
+          vendorIncomeStartIndex = index;
+          console.log('Found Vendor Income section at index:', index);
+        }
+      });
+      
+      // Process all rows to extract month and profit data
+      data.forEach((row: any, index: number) => {
+        const myIncomeValue = row["My Income"];
+        
+        // Check if this row contains a month (has "2025" in it)
+        if (myIncomeValue && myIncomeValue.toString().includes("2025")) {
+          const month = myIncomeValue.toString().trim();
+          console.log(`Found month: ${month} at index ${index}`);
           
-          if (month && month !== '') {
-            // Determine if this is vendor income based on context or row position
-            // From the screenshot, vendor income starts after "Vendor Income" header
-            const isVendorIncome = index > 15; // Adjust based on sheet structure
-            
-            // Find existing entry for this month or create new one
-            let existingEntry = incomeData.find(item => item.month === month);
-            
-            if (!existingEntry) {
-              existingEntry = {
-                month: month,
-                myProfit: 0,
-                vendorProfit: 0
-              };
-              incomeData.push(existingEntry);
+          // Initialize month entry if not exists
+          if (!monthRows[month]) {
+            monthRows[month] = { myProfit: 0, vendorProfit: 0 };
+          }
+          
+          // Find the corresponding profit value - could be in various columns
+          let profitValue = 0;
+          
+          // Check columns for profit data - try different column names
+          const possibleProfitColumns = ['Profit', 'Amount', row[Object.keys(row)[Object.keys(row).length - 2]]]; // Last column before "My Income"
+          
+          for (const col of Object.keys(row)) {
+            if (col !== 'My Income' && col !== 'Name' && col !== 'OKX' && col !== 'Bitget' && col !== 'MEXC' && col !== 'BingX' && col !== '') {
+              const value = this.parseNumber(row[col]);
+              if (value && value > 0) {
+                profitValue = value;
+                console.log(`Found profit value ${profitValue} in column ${col} for month ${month}`);
+                break;
+              }
             }
-            
-            if (isVendorIncome) {
-              existingEntry.vendorProfit = profit;
-            } else {
-              existingEntry.myProfit = profit;
+          }
+          
+          // If we still haven't found a profit value, check if the next row has profit data
+          if (profitValue === 0 && index + 1 < data.length) {
+            const nextRow = data[index + 1];
+            for (const col of Object.keys(nextRow)) {
+              if (col !== 'My Income' && col !== 'Name' && col !== 'OKX' && col !== 'Bitget' && col !== 'MEXC' && col !== 'BingX' && col !== '') {
+                const value = this.parseNumber(nextRow[col]);
+                if (value && value > 0) {
+                  profitValue = value;
+                  console.log(`Found profit value ${profitValue} in next row column ${col} for month ${month}`);
+                  break;
+                }
+              }
             }
+          }
+          
+          // Determine if this is vendor income or my income based on position relative to vendor section
+          if (vendorIncomeStartIndex !== -1 && index > vendorIncomeStartIndex) {
+            monthRows[month].vendorProfit = profitValue;
+            console.log(`Assigned ${profitValue} as vendor profit for ${month}`);
+          } else {
+            monthRows[month].myProfit = profitValue;
+            console.log(`Assigned ${profitValue} as my profit for ${month}`);
           }
         }
       });
-
-      // If no data found from parsing, use the data from your screenshot as fallback
-      if (incomeData.length === 0) {
-        const fallbackData = [
-          { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-          { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-          { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-          { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
-        ];
-        
-        console.log('Using fallback income data:', fallbackData);
-        return fallbackData;
+      
+      // Convert to IncomeData array
+      for (const [month, profits] of Object.entries(monthRows)) {
+        incomeData.push({
+          month,
+          myProfit: profits.myProfit,
+          vendorProfit: profits.vendorProfit
+        });
       }
-
-      console.log('Parsed income data:', incomeData);
-      return incomeData;
+      
+      console.log('Final parsed income data:', incomeData);
+      
+      // If we found data, return it, otherwise use fallback
+      if (incomeData.length > 0) {
+        return incomeData;
+      }
+      
+      // Fallback data
+      const fallbackData = [
+        { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
+        { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
+        { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
+        { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
+      ];
+      
+      console.log('Using fallback income data:', fallbackData);
+      return fallbackData;
       
     } catch (error) {
       console.error('Error fetching income data from SheetDB:', error);
       
-      // Return fallback data based on your screenshot
+      // Return fallback data
       return [
         { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
         { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
