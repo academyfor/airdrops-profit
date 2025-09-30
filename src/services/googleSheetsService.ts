@@ -304,73 +304,84 @@ class SheetDBService {
       }
 
       const data = await response.json();
-      console.log('Raw sheet data for income:', data);
+      console.log('Raw sheet data for income parsing:', data);
       
-      // Based on your sheet screenshot, extract actual income data
-      // Look for rows that have Month and Profit data in the right columns
-      const incomeData: IncomeData[] = [];
+      // Map to store income data by month
+      const incomeMap = new Map<string, IncomeData>();
       
-      // Process each row to find income data
+      // Track which section we're in
+      let inMyIncomeSection = false;
+      let inVendorIncomeSection = false;
+      
+      // Process each row
       data.forEach((row: any, index: number) => {
-        // Check if this row has Month and Profit data (columns G and H)
-        if (row.Month && row.Profit !== undefined && row.Profit !== null && row.Profit !== '') {
+        // Check for section headers
+        const myIncomeCol = row["My Income"] || row["myIncome"] || row["my_income"] || '';
+        const myIncomeStr = myIncomeCol.toString().trim().toLowerCase();
+        
+        // Detect "My Income" section header
+        if (myIncomeStr.includes('my income') && myIncomeStr.includes('month')) {
+          inMyIncomeSection = true;
+          inVendorIncomeSection = false;
+          console.log(`Found My Income section at row ${index}`);
+          return;
+        }
+        
+        // Detect "Vendor Income" section header
+        if (myIncomeStr.includes('vendor income') && myIncomeStr.includes('month')) {
+          inMyIncomeSection = false;
+          inVendorIncomeSection = true;
+          console.log(`Found Vendor Income section at row ${index}`);
+          return;
+        }
+        
+        // Parse data rows in My Income section (rows 3-7 based on G1:H15 range)
+        if (inMyIncomeSection && row.Month && row.Profit !== undefined && row.Profit !== null && row.Profit !== '') {
           const month = row.Month.toString().trim();
           const profit = this.parseNumber(row.Profit) || 0;
           
           if (month && month !== '') {
-            // Determine if this is vendor income based on context or row position
-            // From the screenshot, vendor income starts after "Vendor Income" header
-            const isVendorIncome = index > 15; // Adjust based on sheet structure
-            
-            // Find existing entry for this month or create new one
-            let existingEntry = incomeData.find(item => item.month === month);
-            
-            if (!existingEntry) {
-              existingEntry = {
-                month: month,
-                myProfit: 0,
-                vendorProfit: 0
-              };
-              incomeData.push(existingEntry);
+            if (!incomeMap.has(month)) {
+              incomeMap.set(month, { month, myProfit: 0, vendorProfit: 0 });
             }
-            
-            if (isVendorIncome) {
-              existingEntry.vendorProfit = profit;
-            } else {
-              existingEntry.myProfit = profit;
+            const entry = incomeMap.get(month)!;
+            entry.myProfit = profit;
+            console.log(`My Income - ${month}: $${profit}`);
+          }
+        }
+        
+        // Parse data rows in Vendor Income section (rows 11-15 based on G1:H15 range)
+        if (inVendorIncomeSection && row.Month && row.Profit !== undefined && row.Profit !== null && row.Profit !== '') {
+          const month = row.Month.toString().trim();
+          const profit = this.parseNumber(row.Profit) || 0;
+          
+          if (month && month !== '') {
+            if (!incomeMap.has(month)) {
+              incomeMap.set(month, { month, myProfit: 0, vendorProfit: 0 });
             }
+            const entry = incomeMap.get(month)!;
+            entry.vendorProfit = profit;
+            console.log(`Vendor Income - ${month}: $${profit}`);
           }
         }
       });
 
-      // If no data found from parsing, use the data from your screenshot as fallback
-      if (incomeData.length === 0) {
-        const fallbackData = [
-          { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-          { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-          { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-          { month: 'August 2025', myProfit: 60, vendorProfit: 105 },
-          { month: 'September 2025', myProfit: 0, vendorProfit: 20 }
-        ];
-        
-        console.log('Using fallback income data:', fallbackData);
-        return fallbackData;
+      // Convert map to array
+      const incomeData = Array.from(incomeMap.values());
+      
+      console.log('Final parsed income data:', incomeData);
+      
+      if (incomeData.length > 0) {
+        return incomeData;
       }
-
-      console.log('Parsed income data:', incomeData);
-      return incomeData;
+      
+      // No fallback - return empty array to force proper data fetching
+      console.warn('No income data found in sheet');
+      return [];
       
     } catch (error) {
       console.error('Error fetching income data from SheetDB:', error);
-      
-      // Return fallback data based on your screenshot
-      return [
-        { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-        { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-        { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-        { month: 'August 2025', myProfit: 60, vendorProfit: 105 },
-        { month: 'September 2025', myProfit: 0, vendorProfit: 20 }
-      ];
+      throw error;
     }
   }
 
