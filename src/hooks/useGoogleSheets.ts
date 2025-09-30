@@ -21,8 +21,14 @@ export interface UseGoogleSheetsReturn {
 export const useGoogleSheets = (): UseGoogleSheetsReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
-  const [sheetsData, setSheetsData] = useState<AllSheetData | null>(null);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('lastSyncTime');
+    return saved ? new Date(saved) : null;
+  });
+  const [sheetsData, setSheetsData] = useState<AllSheetData | null>(() => {
+    const saved = localStorage.getItem('sheetsData');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const testConnection = useCallback(async (): Promise<boolean> => {
     try {
@@ -54,8 +60,13 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
       
       const data = await sheetDBService.getAllData();
       setSheetsData(data);
-      setLastSyncTime(new Date());
+      const now = new Date();
+      setLastSyncTime(now);
       setIsConnected(true);
+      
+      // Save to localStorage
+      localStorage.setItem('sheetsData', JSON.stringify(data));
+      localStorage.setItem('lastSyncTime', now.toISOString());
       
       toast.success('✅ Data fetched from Google Sheets successfully!', { id: 'fetch-sheets' });
     } catch (error) {
@@ -106,8 +117,13 @@ export const useGoogleSheets = (): UseGoogleSheetsReturn => {
       // First fetch the latest data from sheets
       const data = await sheetDBService.getAllData();
       setSheetsData(data);
-      setLastSyncTime(new Date());
+      const now = new Date();
+      setLastSyncTime(now);
       setIsConnected(true);
+      
+      // Save to localStorage
+      localStorage.setItem('sheetsData', JSON.stringify(data));
+      localStorage.setItem('lastSyncTime', now.toISOString());
       
       toast.success('🔄 Synced with Google Sheets successfully!', { id: 'sync-sheets' });
     } catch (error) {
