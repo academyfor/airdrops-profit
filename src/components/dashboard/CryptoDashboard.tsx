@@ -102,14 +102,21 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     return { ...data, members: filteredMembers };
   }, [data, filters]);
 
+  // Default income data as fallback
+  const defaultIncomeData = [
+    { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
+    { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
+    { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
+    { month: 'August 2025', myProfit: 60, vendorProfit: 105 },
+    { month: 'September 2025', myProfit: 22, vendorProfit: 103 },
+    { month: 'October 2025', myProfit: 0, vendorProfit: 9 },
+    { month: 'November 2025', myProfit: 110, vendorProfit: 0 },
+    { month: 'December 2025', myProfit: 0, vendorProfit: 0 }
+  ];
+
   // Calculate total income from income comparison data
   const totalIncomeFromComparison = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || [
-      { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-      { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-      { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-      { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
-    ];
+    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
     
     const totalMyIncome = incomeData.reduce((sum, item) => sum + item.myProfit, 0);
     const totalVendorIncome = incomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
@@ -119,13 +126,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
   // Calculate my total income for Net Profit display
   const myTotalIncome = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || [
-      { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-      { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-      { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-      { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
-    ];
-    
+    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
     return incomeData.reduce((sum, item) => sum + item.myProfit, 0);
   }, [googleSheets.sheetsData?.incomeData]);
 
@@ -244,12 +245,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
       {/* Income Comparison - Always show with data */}
       <div className="space-y-4">
-        <IncomeComparison incomeData={googleSheets.sheetsData?.incomeData || [
-          { month: 'May 2025', myProfit: 96, vendorProfit: 0 },
-          { month: 'June 2025', myProfit: 200, vendorProfit: 123 },
-          { month: 'July 2025', myProfit: 189, vendorProfit: 216 },
-          { month: 'August 2025', myProfit: 60, vendorProfit: 105 }
-        ]} />
+        <IncomeComparison incomeData={googleSheets.sheetsData?.incomeData || defaultIncomeData} />
       </div>
 
       {/* AI Insights */}
