@@ -15,6 +15,7 @@ export interface SheetMember {
   bitget: number | null;
   mexc: number | null;
   bingx: number | null;
+  bybit: number | null;
   total: number;
 }
 
@@ -71,7 +72,8 @@ class SheetDBService {
           bitget: this.parseNumber(row.Bitget),
           mexc: this.parseNumber(row.MEXC),
           bingx: this.parseNumber(row.BingX),
-          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX)
+          bybit: this.parseNumber(row.Bybit),
+          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX, row.Bybit)
         }));
 
       // Get income data from the same sheet
@@ -118,7 +120,8 @@ class SheetDBService {
           bitget: this.parseNumber(row.Bitget),
           mexc: this.parseNumber(row.MEXC),
           bingx: this.parseNumber(row.BingX),
-          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX)
+          bybit: this.parseNumber(row.Bybit),
+          total: this.calculateTotal(row.OKX, row.Bitget, row.MEXC, row.BingX, row.Bybit)
         }));
     } catch (error) {
       console.error('Error fetching members from SheetDB:', error);
@@ -162,6 +165,7 @@ class SheetDBService {
             Bitget: member.bitget || '',
             MEXC: member.mexc || '',
             BingX: member.bingx || '',
+            Bybit: member.bybit || '',
             total: member.total || 0
           }))
         ),
@@ -260,8 +264,8 @@ class SheetDBService {
   /**
    * Helper function to calculate total
    */
-  private calculateTotal(okx: any, bitget: any, mexc: any, bingx: any): number {
-    const values = [okx, bitget, mexc, bingx].map(v => this.parseNumber(v) || 0);
+  private calculateTotal(okx: any, bitget: any, mexc: any, bingx: any, bybit?: any): number {
+    const values = [okx, bitget, mexc, bingx, bybit].map(v => this.parseNumber(v) || 0);
     return values.reduce((sum, val) => sum + val, 0);
   }
 
@@ -275,6 +279,7 @@ class SheetDBService {
       bitget: member.bitget,
       mexc: member.mexc,
       bingx: member.bingx,
+      bybit: member.bybit,
       total: member.total
     }));
   }

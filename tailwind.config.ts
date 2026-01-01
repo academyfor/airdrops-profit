@@ -66,7 +66,8 @@ export default {
 					okx: 'hsl(var(--okx))',
 					bitget: 'hsl(var(--bitget))',
 					mexc: 'hsl(var(--mexc))',
-					bingx: 'hsl(var(--bingx))'
+					bingx: 'hsl(var(--bingx))',
+					bybit: 'hsl(var(--bybit))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

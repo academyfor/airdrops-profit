@@ -4,6 +4,7 @@ export interface MemberEarning {
   bitget: number | null;
   mexc: number | null;
   bingx: number | null;
+  bybit: number | null;
   total: number;
   isReferral: boolean;
 }
@@ -23,6 +24,7 @@ export interface ExchangeTotals {
   bitget: number;
   mexc: number;
   bingx: number;
+  bybit: number;
   total: number;
 }
 
@@ -50,7 +52,8 @@ export const EXCHANGE_COLORS = {
   bitget: 'hsl(var(--bitget))',
   mexc: 'hsl(var(--mexc))',
   bingx: 'hsl(var(--bingx))',
+  bybit: 'hsl(var(--bybit))',
 } as const;
 
-export const EXCHANGES = ['okx', 'bitget', 'mexc', 'bingx'] as const;
+export const EXCHANGES = ['okx', 'bitget', 'mexc', 'bingx', 'bybit'] as const;
 export type Exchange = typeof EXCHANGES[number];
