@@ -158,7 +158,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
         <KPICard
           title="Total In-Eligible Accounts"
           value={googleSheets.sheetsData?.totalInEligibleAccounts || 50}
@@ -190,6 +190,12 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
           value={data.exchangeTotals.bingx}
           icon={TrendingUp}
           trend={data.exchangeTotals.bingx > 0 ? 'up' : 'neutral'}
+        />
+        <KPICard
+          title="Bybit Earnings"
+          value={data.exchangeTotals.bybit}
+          icon={TrendingUp}
+          trend={data.exchangeTotals.bybit > 0 ? 'up' : data.exchangeTotals.bybit < 0 ? 'down' : 'neutral'}
         />
         <KPICard
           title="Net Profit"
