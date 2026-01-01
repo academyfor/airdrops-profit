@@ -30,8 +30,9 @@ export function MemberEarningsTable({ members, filters }: MemberEarningsTablePro
     bitget: filteredMembers.reduce((sum, m) => sum + (m.bitget || 0), 0),
     mexc: filteredMembers.reduce((sum, m) => sum + (m.mexc || 0), 0),
     bingx: filteredMembers.reduce((sum, m) => sum + (m.bingx || 0), 0),
+    bybit: filteredMembers.reduce((sum, m) => sum + (m.bybit || 0), 0),
   };
-  const grandTotal = totals.okx + totals.bitget + totals.mexc + totals.bingx;
+  const grandTotal = totals.okx + totals.bitget + totals.mexc + totals.bingx + totals.bybit;
 
   const formatValue = (value: number | null) => {
     if (value === null) return <span className="text-muted-foreground">~</span>;
@@ -65,6 +66,7 @@ export function MemberEarningsTable({ members, filters }: MemberEarningsTablePro
                 <TableHead className="text-center text-exchange-bitget font-semibold">Bitget</TableHead>
                 <TableHead className="text-center text-exchange-mexc font-semibold">MEXC</TableHead>
                 <TableHead className="text-center text-exchange-bingx font-semibold">BingX</TableHead>
+                <TableHead className="text-center text-exchange-bybit font-semibold">Bybit</TableHead>
                 <TableHead className="text-center text-foreground font-semibold">Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -91,6 +93,7 @@ export function MemberEarningsTable({ members, filters }: MemberEarningsTablePro
                   <TableCell className="text-center">{formatValue(member.bitget)}</TableCell>
                   <TableCell className="text-center">{formatValue(member.mexc)}</TableCell>
                   <TableCell className="text-center">{formatValue(member.bingx)}</TableCell>
+                  <TableCell className="text-center">{formatValue(member.bybit)}</TableCell>
                   <TableCell className="text-center">
                     <span className={cn(
                       'font-bold',
@@ -103,7 +106,6 @@ export function MemberEarningsTable({ members, filters }: MemberEarningsTablePro
                 </TableRow>
               ))}
               
-              {/* Totals Row */}
               <TableRow className="border-t-2 border-primary/30 bg-muted/20 hover:bg-muted/30">
                 <TableCell className="font-bold text-foreground">TOTALS</TableCell>
                 <TableCell className="text-center font-bold text-exchange-okx">
@@ -117,6 +119,9 @@ export function MemberEarningsTable({ members, filters }: MemberEarningsTablePro
                 </TableCell>
                 <TableCell className="text-center font-bold text-exchange-bingx">
                   ${totals.bingx.toFixed(0)}
+                </TableCell>
+                <TableCell className="text-center font-bold text-exchange-bybit">
+                  ${totals.bybit.toFixed(0)}
                 </TableCell>
                 <TableCell className="text-center font-bold text-primary text-lg">
                   ${grandTotal.toFixed(0)}

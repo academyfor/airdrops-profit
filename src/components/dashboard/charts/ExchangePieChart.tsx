@@ -12,6 +12,7 @@ export function ExchangePieChart({ exchangeTotals }: ExchangePieChartProps) {
     { name: 'Bitget', value: exchangeTotals.bitget, color: EXCHANGE_COLORS.bitget },
     { name: 'MEXC', value: exchangeTotals.mexc, color: EXCHANGE_COLORS.mexc },
     { name: 'BingX', value: exchangeTotals.bingx, color: EXCHANGE_COLORS.bingx },
+    { name: 'Bybit', value: exchangeTotals.bybit, color: EXCHANGE_COLORS.bybit },
   ].filter(item => item.value > 0);
 
   const CustomTooltip = ({ active, payload }: any) => {
