@@ -359,7 +359,7 @@ class SheetDBService {
           { month: 'October 2025', myProfit: 0, vendorProfit: 9 },
           { month: 'November 2025', myProfit: 110, vendorProfit: 0 },
           { month: 'December 2025', myProfit: 349, vendorProfit: 149 },
-          { month: 'January 2026', myProfit: 69, vendorProfit: 100 }
+          { month: 'January 2026', myProfit: 0, vendorProfit: 76 }
         ];
         
         console.log('Using fallback income data:', fallbackData);
@@ -382,7 +382,7 @@ class SheetDBService {
         { month: 'October 2025', myProfit: 0, vendorProfit: 9 },
         { month: 'November 2025', myProfit: 110, vendorProfit: 0 },
         { month: 'December 2025', myProfit: 349, vendorProfit: 149 },
-        { month: 'January 2026', myProfit: 69, vendorProfit: 100 }
+        { month: 'January 2026', myProfit: 0, vendorProfit: 76 }
       ];
     }
   }
