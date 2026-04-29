@@ -28,19 +28,15 @@ interface CryptoDashboardProps {
 }
 
 export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
-  const googleSheets = useGoogleSheets();
-  const [data, setData] = useState<DashboardData>(() => {
-    // Try to load persisted data from localStorage
-    const persistedData = localStorage.getItem('cryptoDashboardData');
-    if (persistedData) {
-      try {
-        return JSON.parse(persistedData);
-      } catch (error) {
-        console.error('Error parsing persisted data:', error);
-      }
-    }
-    return initialData;
-  });
+  // Dashboard is fully self-contained — always use the latest baked-in data.
+  // Clear any stale cached values from previous sheet syncs so users always see fresh code values.
+  useEffect(() => {
+    localStorage.removeItem('cryptoDashboardData');
+    localStorage.removeItem('sheetsData');
+    localStorage.removeItem('lastSyncTime');
+  }, []);
+
+  const [data] = useState<DashboardData>(initialData);
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedExchanges: [],
@@ -49,21 +45,6 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     showReferrals: true,
     selectedMembers: [],
   });
-
-  // Update data when Google Sheets data is fetched
-  const handleFetchData = () => {
-    if (googleSheets.sheetsData) {
-      const newData = convertSheetsToDashboardData(googleSheets.sheetsData);
-      setData(newData);
-      // Persist data to localStorage
-      localStorage.setItem('cryptoDashboardData', JSON.stringify(newData));
-    }
-  };
-
-  const handlePushData = () => {
-    // Data is successfully pushed to Google Sheets
-    // Could add additional logic here if needed
-  };
 
   const memberNames = useMemo(() => 
     data.members.map(m => m.name), 
