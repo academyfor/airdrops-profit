@@ -137,7 +137,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
         <KPICard
           title="Total In-Eligible Accounts"
-          value={googleSheets.sheetsData?.totalInEligibleAccounts || 50}
+          value={86}
           icon={TrendingDown}
           variant="primary"
           subtitle="Across all exchanges"
@@ -227,7 +227,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
       {/* Income Comparison - Always show with data */}
       <div className="space-y-4">
-        <IncomeComparison incomeData={googleSheets.sheetsData?.incomeData || defaultIncomeData} />
+        <IncomeComparison incomeData={defaultIncomeData} />
       </div>
 
       {/* AI Insights */}
@@ -244,22 +244,6 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         />
       </div>
 
-      {/* SheetDB Integration */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Settings className="h-5 w-5 text-primary" />
-          SheetDB Integration
-        </div>
-        <GoogleSheetsSync 
-          googleSheets={googleSheets}
-          onFetchData={handleFetchData}
-          onPushData={handlePushData}
-          dashboardData={{
-            members: data.members,
-            monthlyData: data.monthlyProfits
-          }}
-        />
-      </div>
     </div>
   );
 }
