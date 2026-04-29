@@ -1,8 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FilterState, DashboardData } from '@/types/dashboard';
-import { useGoogleSheets } from '@/hooks/useGoogleSheets';
-import { GoogleSheetsSync } from './GoogleSheetsSync';
-import { convertSheetsToDashboardData } from '@/utils/dataParser';
 import { KPICard } from './KPICard';
 import { MemberEarningsTable } from './MemberEarningsTable';
 import { DashboardFilters } from './DashboardFilters';
@@ -12,10 +9,10 @@ import { MonthlyProfitChart } from './charts/MonthlyProfitChart';
 import { VendorSection } from './VendorSection';
 import { AIInsights } from './AIInsights';
 import { IncomeComparison } from './IncomeComparison';
-import { 
-  TrendingUp, 
-  DollarSign, 
-  Users, 
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
   PiggyBank,
   BarChart3,
   PieChart,
