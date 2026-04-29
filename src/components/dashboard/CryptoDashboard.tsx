@@ -1,8 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FilterState, DashboardData } from '@/types/dashboard';
-import { useGoogleSheets } from '@/hooks/useGoogleSheets';
-import { GoogleSheetsSync } from './GoogleSheetsSync';
-import { convertSheetsToDashboardData } from '@/utils/dataParser';
 import { KPICard } from './KPICard';
 import { MemberEarningsTable } from './MemberEarningsTable';
 import { DashboardFilters } from './DashboardFilters';
@@ -12,10 +9,10 @@ import { MonthlyProfitChart } from './charts/MonthlyProfitChart';
 import { VendorSection } from './VendorSection';
 import { AIInsights } from './AIInsights';
 import { IncomeComparison } from './IncomeComparison';
-import { 
-  TrendingUp, 
-  DollarSign, 
-  Users, 
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
   PiggyBank,
   BarChart3,
   PieChart,
@@ -31,19 +28,15 @@ interface CryptoDashboardProps {
 }
 
 export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
-  const googleSheets = useGoogleSheets();
-  const [data, setData] = useState<DashboardData>(() => {
-    // Try to load persisted data from localStorage
-    const persistedData = localStorage.getItem('cryptoDashboardData');
-    if (persistedData) {
-      try {
-        return JSON.parse(persistedData);
-      } catch (error) {
-        console.error('Error parsing persisted data:', error);
-      }
-    }
-    return initialData;
-  });
+  // Dashboard is fully self-contained — always use the latest baked-in data.
+  // Clear any stale cached values from previous sheet syncs so users always see fresh code values.
+  useEffect(() => {
+    localStorage.removeItem('cryptoDashboardData');
+    localStorage.removeItem('sheetsData');
+    localStorage.removeItem('lastSyncTime');
+  }, []);
+
+  const [data] = useState<DashboardData>(initialData);
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedExchanges: [],
@@ -52,21 +45,6 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
     showReferrals: true,
     selectedMembers: [],
   });
-
-  // Update data when Google Sheets data is fetched
-  const handleFetchData = () => {
-    if (googleSheets.sheetsData) {
-      const newData = convertSheetsToDashboardData(googleSheets.sheetsData);
-      setData(newData);
-      // Persist data to localStorage
-      localStorage.setItem('cryptoDashboardData', JSON.stringify(newData));
-    }
-  };
-
-  const handlePushData = () => {
-    // Data is successfully pushed to Google Sheets
-    // Could add additional logic here if needed
-  };
 
   const memberNames = useMemo(() => 
     data.members.map(m => m.name), 
@@ -118,19 +96,15 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
   // Calculate total income from income comparison data
   const totalIncomeFromComparison = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
-    
-    const totalMyIncome = incomeData.reduce((sum, item) => sum + item.myProfit, 0);
-    const totalVendorIncome = incomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
-    
+    const totalMyIncome = defaultIncomeData.reduce((sum, item) => sum + item.myProfit, 0);
+    const totalVendorIncome = defaultIncomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
     return totalMyIncome + totalVendorIncome;
-  }, [googleSheets.sheetsData?.incomeData]);
+  }, []);
 
   // Calculate my total income for Net Profit display
   const myTotalIncome = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
-    return incomeData.reduce((sum, item) => sum + item.myProfit, 0);
-  }, [googleSheets.sheetsData?.incomeData]);
+    return defaultIncomeData.reduce((sum, item) => sum + item.myProfit, 0);
+  }, []);
 
   // Keep the header total in sync with the table grand total (last cell)
   const tableGrandTotal = useMemo(() => {
@@ -163,7 +137,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
         <KPICard
           title="Total In-Eligible Accounts"
-          value={googleSheets.sheetsData?.totalInEligibleAccounts || 50}
+          value={86}
           icon={TrendingDown}
           variant="primary"
           subtitle="Across all exchanges"
@@ -253,7 +227,7 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
       {/* Income Comparison - Always show with data */}
       <div className="space-y-4">
-        <IncomeComparison incomeData={googleSheets.sheetsData?.incomeData || defaultIncomeData} />
+        <IncomeComparison incomeData={defaultIncomeData} />
       </div>
 
       {/* AI Insights */}
@@ -270,22 +244,6 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
         />
       </div>
 
-      {/* SheetDB Integration */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Settings className="h-5 w-5 text-primary" />
-          SheetDB Integration
-        </div>
-        <GoogleSheetsSync 
-          googleSheets={googleSheets}
-          onFetchData={handleFetchData}
-          onPushData={handlePushData}
-          dashboardData={{
-            members: data.members,
-            monthlyData: data.monthlyProfits
-          }}
-        />
-      </div>
     </div>
   );
 }

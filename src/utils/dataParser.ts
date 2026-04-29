@@ -120,27 +120,28 @@ export function convertSheetsToDashboardData(sheetsData: AllSheetData): Dashboar
 }
 
 export function getMockData(): DashboardData {
+  // Latest snapshot of member earnings (frozen, no longer fetched from sheet)
   const members: MemberEarning[] = [
-    { name: 'Aneeq', okx: null, bitget: 15, mexc: -5, bingx: 13, bybit: null, total: 0, isReferral: false },
-    { name: 'Raza', okx: 33, bitget: 0, mexc: 27, bingx: 13, bybit: null, total: 0, isReferral: false },
-    { name: 'Raza Referral', okx: 0, bitget: 0, mexc: 1, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Dani', okx: 0, bitget: 0, mexc: 27, bingx: null, bybit: null, total: 0, isReferral: false },
-    { name: 'Qasim Referral', okx: 0, bitget: 0, mexc: 104, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Murtaza', okx: 11, bitget: null, mexc: null, bingx: null, bybit: null, total: 0, isReferral: false },
-    { name: 'Sehven', okx: null, bitget: -18, mexc: 13, bingx: 7, bybit: null, total: 0, isReferral: false },
-    { name: 'Sehven Referral', okx: null, bitget: 0, mexc: 26, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Qaisar', okx: null, bitget: null, mexc: null, bingx: null, bybit: null, total: 0, isReferral: false },
-    { name: 'Shah Fahad', okx: null, bitget: 0, mexc: 10, bingx: 12, bybit: null, total: 0, isReferral: false },
-    { name: 'Atshan', okx: null, bitget: 0, mexc: 35, bingx: 9, bybit: null, total: 0, isReferral: false },
-    { name: 'Zuheer', okx: null, bitget: null, mexc: 20, bingx: 7, bybit: null, total: 0, isReferral: false },
-    { name: 'Zuheer Referral', okx: 0, bitget: 0, mexc: 50, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Amir', okx: null, bitget: 0, mexc: 16, bingx: -2, bybit: null, total: 0, isReferral: false },
-    { name: 'Naseeb Ali', okx: null, bitget: null, mexc: 16, bingx: null, bybit: null, total: 0, isReferral: false },
-    { name: 'Abid', okx: null, bitget: 0, mexc: 14, bingx: null, bybit: null, total: 0, isReferral: false },
-    { name: 'Asim Referral', okx: 0, bitget: 0, mexc: 33, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Ali Referral', okx: 0, bitget: 0, mexc: 18, bingx: 0, bybit: null, total: 0, isReferral: true },
-    { name: 'Mamo', okx: 0, bitget: 0, mexc: -31, bingx: 0, bybit: null, total: 0, isReferral: false },
-    { name: 'Naseem', okx: null, bitget: null, mexc: 26, bingx: null, bybit: null, total: 0, isReferral: false },
+    { name: 'Aneeq', okx: null, bitget: 15, mexc: -5, bingx: 13, bybit: 0, total: 23, isReferral: false },
+    { name: 'Raza', okx: 33, bitget: 0, mexc: 27, bingx: 13, bybit: 0, total: 73, isReferral: false },
+    { name: 'Raza Referral', okx: 13, bitget: 67, mexc: 92, bingx: 0, bybit: 0, total: 172, isReferral: true },
+    { name: 'Dani', okx: 20, bitget: 12, mexc: 27, bingx: null, bybit: 0, total: 59, isReferral: false },
+    { name: 'Qasim Referral', okx: 30, bitget: 48, mexc: 198, bingx: 0, bybit: null, total: 276, isReferral: true },
+    { name: 'Mine', okx: 11, bitget: null, mexc: null, bingx: null, bybit: 30, total: 41, isReferral: false },
+    { name: 'Sehven', okx: null, bitget: -9, mexc: 13, bingx: 7, bybit: 0, total: 11, isReferral: false },
+    { name: 'Sehven Referral', okx: null, bitget: 0, mexc: 70, bingx: 0, bybit: null, total: 70, isReferral: true },
+    { name: 'Qaisar', okx: 30, bitget: 17, mexc: 58, bingx: -4, bybit: 0, total: 101, isReferral: false },
+    { name: 'Shah Fahad', okx: null, bitget: 0, mexc: 20, bingx: 12, bybit: 0, total: 32, isReferral: false },
+    { name: 'Atshan', okx: null, bitget: 0, mexc: 35, bingx: 9, bybit: 0, total: 44, isReferral: false },
+    { name: 'Saqib Referral', okx: 63, bitget: 20, mexc: null, bingx: null, bybit: null, total: 83, isReferral: true },
+    { name: 'Zuheer Referral', okx: 30, bitget: 10, mexc: 166, bingx: 5, bybit: null, total: 211, isReferral: true },
+    { name: 'Haji / Ali Ref', okx: 66, bitget: 184, mexc: null, bingx: 38, bybit: 67, total: 355, isReferral: true },
+    { name: 'Naseeb Ali', okx: 32, bitget: 19, mexc: 32, bingx: null, bybit: 189, total: 272, isReferral: false },
+    { name: 'Abid', okx: null, bitget: 0, mexc: 34, bingx: null, bybit: 0, total: 34, isReferral: false },
+    { name: 'Asim Referral', okx: 0, bitget: 0, mexc: 33, bingx: 0, bybit: 0, total: 33, isReferral: true },
+    { name: 'Ali Referral', okx: 0, bitget: 0, mexc: 65, bingx: 0, bybit: null, total: 65, isReferral: true },
+    { name: 'Mamo', okx: 0, bitget: 0, mexc: -31, bingx: 0, bybit: null, total: -31, isReferral: false },
+    { name: 'Naseem', okx: null, bitget: null, mexc: 52, bingx: null, bybit: null, total: 52, isReferral: false },
   ];
 
   // Calculate totals for each member
