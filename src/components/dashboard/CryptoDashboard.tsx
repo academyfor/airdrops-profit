@@ -96,19 +96,15 @@ export function CryptoDashboard({ data: initialData }: CryptoDashboardProps) {
 
   // Calculate total income from income comparison data
   const totalIncomeFromComparison = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
-    
-    const totalMyIncome = incomeData.reduce((sum, item) => sum + item.myProfit, 0);
-    const totalVendorIncome = incomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
-    
+    const totalMyIncome = defaultIncomeData.reduce((sum, item) => sum + item.myProfit, 0);
+    const totalVendorIncome = defaultIncomeData.reduce((sum, item) => sum + item.vendorProfit, 0);
     return totalMyIncome + totalVendorIncome;
-  }, [googleSheets.sheetsData?.incomeData]);
+  }, []);
 
   // Calculate my total income for Net Profit display
   const myTotalIncome = useMemo(() => {
-    const incomeData = googleSheets.sheetsData?.incomeData || defaultIncomeData;
-    return incomeData.reduce((sum, item) => sum + item.myProfit, 0);
-  }, [googleSheets.sheetsData?.incomeData]);
+    return defaultIncomeData.reduce((sum, item) => sum + item.myProfit, 0);
+  }, []);
 
   // Keep the header total in sync with the table grand total (last cell)
   const tableGrandTotal = useMemo(() => {
